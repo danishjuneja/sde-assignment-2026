@@ -1,0 +1,18 @@
+{
+  "scope": "Abrupt process kill during ingestion; no approval/apply recovery claim",
+  "interrupted_at": {
+    "chunk": 0,
+    "committed_lines": 500
+  },
+  "checks": {
+    "sqlite_integrity_ok": true,
+    "all_chunks_complete": true,
+    "event_count_matches_descriptors": true,
+    "call_projections_match_ledger": true,
+    "clock_unchanged": true,
+    "credits_unchanged": true
+  },
+  "events_after_restart": 297024,
+  "calls_after_restart": 224358,
+  "passed": true
+}

@@ -1,5 +1,7 @@
 # Outcome-First Agent Loop — Senior Engineer Assignment
 
+[submission details](#submission-details)
+
 **Formi · Agentic Universe** · Greenfield · Suggested effort 12–16 hours across 7 calendar days
 
 ---
@@ -176,3 +178,156 @@ thing you cut.
 - If something is ambiguous, **state your assumption in `SUBMISSION.md` and proceed**. Don't wait for an
   answer. Questions are welcome but won't block you.
 - Don't share the assignment or your solution publicly.
+
+---
+
+## Submission details
+
+### Current status
+
+**The foundation is implemented, not the complete assignment.** The controller currently observes only:
+it reads historical and live events, saves progress, tracks pickup and engagement separately, records
+observed configurations, and resumes after interrupted ingestion. It does not yet experiment, request
+approvals, change configurations, or improve outcomes.
+
+Verification so far:
+- 24 tests pass: six existing simulator tests and eighteen controller test cases.
+- The full eight-day `public_01` scenario completed through `run.sh`, storing 297,024 historical and live
+  records across 393 chunks.
+- An abrupt process kill after a 500-record commit was followed by a successful restart and complete
+  backlog ingestion, with matching record/call counts and a passing SQLite integrity check.
+- This proves ingestion recovery, **not** approval/apply recovery, load capacity, or statistical correctness.
+
+Usage: [controller guide](docs/CONTROLLER.md). Evidence: [foundation report](reports/foundation.md) and
+[ingestion recovery results](reports/ingest_recovery.json). Target design:
+[implementation plan](docs/IMPLEMENTATION_PLAN.md).
+
+### Design and scope decisions
+
+#### 1. Build reliability before optimisation
+
+**Decision:** Read records reliably, remember progress, and recover from crashes before allowing changes.
+
+**Reason:** A learning system is unsafe if it forgets pending work or counts the same calls twice.
+
+**Status:** Implemented for ingestion. The controller remains observe-only.
+
+#### 2. Keep the implementation small
+
+**Decision:** Use Python, SQLite, and one controller process rather than introducing Kafka, Redis, or
+another database service.
+
+**Reason:** Python fits the existing repository. SQLite provides durable local storage without additional
+infrastructure to operate.
+
+**Trade-off:** This is an assignment starting point, not proof of production capacity. Load benchmarking
+is pending; Postgres is the planned production successor if required.
+
+**Status:** Implemented.
+
+#### 3. Never bypass permission rules
+
+**Decision:** Read each workflow's policy from the API, and permit automatic changes only where that
+policy explicitly allows them. Stakeholder requests do not override the contract.
+
+**Reason:** Governance is non-negotiable, and stakeholder claims can be wrong. API inspection of
+`public_01` showed that Northwind KYC disables auto-apply. Kestrel allows only certain automatic changes,
+excludes prompts and cohorts, and caps allocation shifts at 0.2.
+
+**Status:** Policies inspected and workflow metadata stored. Policy enforcement and approval handling
+are not yet implemented. These observations must not become hardcoded assumptions for other scenarios.
+
+#### 4. Keep the measurements separate
+
+**Decision:** Never combine pickup and engagement into one score. Report historical and live observations
+separately as well.
+
+**Reason:** A change may improve one measurement while hurting the other. Historical observations must
+not be presented as evidence from a new experiment. Engagement with no connected calls is unknown
+(`null`), not zero.
+
+**Status:** Implemented.
+
+#### 5. Start with a narrow experiment
+
+**Decision:** Test one setting at a time, starting with voice, rather than changing voice, opening message,
+and timing together.
+
+**Reason:** Changing several settings at once makes it harder to explain which change helped.
+
+**Trade-off:** This is slower and will not discover every interaction between settings.
+
+**Status:** Planned, not implemented.
+
+#### 6. Do not promote a winner based on a few good calls
+
+**Decision:** Use deterministic statistical rules, sufficient samples, and evidence that the other KPI
+has not deteriorated beyond its guardrail. The LLM will not choose winners.
+
+**Reason:** Yesterday's best voice may simply have been lucky. Repeated calls to the same people,
+multiple comparisons, and repeatedly checking results can also make evidence misleading.
+
+**Status:** Planned. The exact statistical implementation still needs building and testing.
+
+#### 7. Treat improvement as reversible
+
+**Decision:** Pair promotion with continued monitoring and a permission-compliant rollback path.
+
+**Reason:** A successful setting can stop working later. A rollback must not blindly restore an old full
+configuration over a supervisor's newer edits, and it cannot bypass approval rules.
+
+**Status:** Planned.
+
+#### 8. Treat prompt safety and engagement as different questions
+
+**Decision:** Passing prompt validation will not automatically make a prompt a good replacement.
+
+**Reason:** Validation checks safety, not engagement. A safe script can still make customers hang up.
+After an authorised prompt change, both live safety signals and engagement need verification.
+
+**Status:** Planned incident-response design.
+
+#### 9. Keep evidence in our own database
+
+**Decision:** Store events and configuration snapshots, then add decision rationale, experiment evidence,
+and approval records as those capabilities are implemented.
+
+**Reason:** The assignment requires an explanation from our own records; simulator logs do not count.
+
+**Status:** Events and observed configurations are stored and queryable. Controller decision explanations,
+approval evidence, and post-change analysis are still pending.
+
+#### 10. Deliberately defer some features
+
+| Deferred feature | Reason |
+|---|---|
+| Personalised calling times for every person | Too much complexity for the initial scope |
+| Polished graphical dashboard | A consolidated command-line view is sufficient initially |
+| Many simultaneous experiments | Harder to attribute results and manage approvals |
+| Complex infrastructure | Adds operational work before a demonstrated need |
+
+These are proposed scope cuts, not reasons to skip the central improvement loop. The plan favours a small,
+explainable, safety-first controller over a broad system that changes everything automatically.
+
+### Assumptions deliberately not made
+
+- An unused voice or caller ID is not assumed to be better.
+- A prompt that succeeds for one client is not assumed to work for another.
+- Historical correlation is not treated as proof that a change will help.
+- Completing a simulator run does not mean the assignment is complete or outcomes improved.
+- Current tests do not prove load capacity, statistical correctness, or full crash safety.
+
+### Remaining work
+
+Next implement safe approval and change handling, followed by the learning loop:
+
+1. Durable proposals, runtime policy checks, approval reconciliation, and authorised application.
+2. Safe handling of supervisor edits, stale proposals, expiry, and lapse.
+3. Population-level problem detection and statistically defensible experiments.
+4. Winner promotion, ongoing monitoring, and governed rollback.
+5. Caller-ID health and validated prompt incident response, with credit budgeting.
+6. Decision-level audit explanations and post-change verification.
+7. Incident-scenario testing, load benchmarks, and approval/apply crash-recovery evidence.
+8. Graded reports, stakeholder replies, and the complete `SUBMISSION.md` required by the template.
+
+This README section is a progress and decision summary; it does not replace the required `SUBMISSION.md`.
