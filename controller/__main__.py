@@ -10,12 +10,13 @@ from .store import Store
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Durable workflow controller (observe-only milestone)")
+    parser = argparse.ArgumentParser(description="Durable workflow controller with governed incident response")
     commands = parser.add_subparsers(dest="command", required=True)
-    start = commands.add_parser("run", help="Ingest and advance the simulator; no config changes yet")
+    start = commands.add_parser("run", help="Ingest, respond to incidents through approvals, and advance")
     start.add_argument("--url", required=True)
     start.add_argument("--db", default="state/controller.sqlite3")
     start.add_argument("--max-ticks", type=int, help="Pause after this many advances; restart to resume")
+    start.add_argument("--observe-only", action="store_true", help="Disable incident detection and all configuration mutations")
     status = commands.add_parser("status", help="Read consolidated KPIs from our database")
     status.add_argument("--db", default="state/controller.sqlite3")
     explain = commands.add_parser("explain", help="Show observed changes and config history")
@@ -30,7 +31,7 @@ def main():
             store = Store(args.db)
             api = SimulatorAPI(args.url)
             try:
-                result = run(api, store, max_ticks=args.max_ticks)
+                result = run(api, store, max_ticks=args.max_ticks, observe_only=args.observe_only)
             finally:
                 api.close()
                 store.close()

@@ -4,7 +4,7 @@
 
 Build a small, durable Python controller with SQLite, an HTTP-only simulator client, deterministic experiment decisions, and a queryable audit trail. Prioritise safe learning, incident response and recovery over a polished dashboard or per-person optimisation.
 
-This document describes the target design; it is not a claim that every capability is built. The first observe-only milestone now replaces the naive entrypoint: durable ingestion, separate history/live KPIs, config evidence and restart recovery. See `docs/CONTROLLER.md` for usage and `reports/foundation.md` for actual evidence. Learning and governance mutations remain unimplemented.
+This document describes the target design; it is not a claim that every capability is built. Durable ingestion and governed incident response now replace the naive entrypoint: separate history/live KPIs, config evidence, restartable ingestion, caller-ID and hallucination detection, approval proposals/application, and post-change checks. See `docs/CONTROLLER.md` for usage and `reports/public_01.md` / `reports/public_02.md` for graded runs. Experiments, general decay rollback and load benchmarking remain unimplemented. The original observe-only evidence is in `reports/foundation.md`.
 
 ### Evidence reviewed
 
@@ -232,4 +232,4 @@ At 10x, likely pressure points are event retention, SQLite write bandwidth, high
 
 ## 10. First concrete implementation task
 
-Dependency installation, API policy inspection and the first durable observe-only controller are verified. All 24 tests pass, public_01 completed through `run.sh`, and an abrupt mid-chunk kill/restart recovered the complete backlog. Next implement durable proposals, policy checks and approval reconciliation before optimisation logic. Use the virtualenv interpreter (or activate `.venv`) for local commands; on Linux the interpreter path is `.venv/bin/python`.
+Durable ingestion and the narrow incident-response path are implemented and tested. Public_01 completed without unnecessary actions; public_02 applied three human-approved changes graded beneficial. Actual process-kill evidence covers ingestion; proposal/apply uncertainty is tested synthetically. Next: end-to-end approval recovery, experiments, and load benchmarking. Use the virtualenv interpreter (or activate `.venv`) for local commands; on Linux the interpreter path is `.venv/bin/python`.

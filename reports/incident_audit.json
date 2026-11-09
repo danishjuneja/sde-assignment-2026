@@ -1,0 +1,432 @@
+{
+  "incidents": [
+    {
+      "incident_id": "85c5dd93-f68a-4098-a6f2-3b1b061053cd",
+      "kind": "caller_id",
+      "subject": "D2",
+      "detected_at": "2027-01-06T12:00:00+05:30",
+      "status": "resolved",
+      "replacement": "D1",
+      "applied_at": "2027-01-06T14:45:00+05:30",
+      "approval": {
+        "apply_by": "2027-01-06T16:29:00+05:30",
+        "approval_id": "apr_00001",
+        "base_version": 1,
+        "changed_dims": [
+          "caller_id"
+        ],
+        "created_at": "2027-01-06T13:00:00+05:30",
+        "decided_at": "2027-01-06T14:29:00+05:30",
+        "expires_at": "2027-01-07T01:00:00+05:30",
+        "proposal_id": "85c5dd93-f68a-4098-a6f2-3b1b061053cd",
+        "reasons": [],
+        "status": "approved",
+        "workflow_id": "ks_cancel"
+      },
+      "validation": null,
+      "evidence": {
+        "baseline": {
+          "connected": 8226,
+          "dials": 32537,
+          "engaged": 4152,
+          "hallucinations": 120
+        },
+        "confirmation_looks": 2,
+        "kind": "caller_id",
+        "recent": {
+          "connected": 107,
+          "dials": 797,
+          "engaged": 54,
+          "hallucinations": 3
+        },
+        "subject": "D2",
+        "window_end": "2027-01-06T13:00:00+05:30",
+        "window_start": "2027-01-06T09:00:00+05:30"
+      },
+      "verification": {
+        "engagement_harm_detected": false,
+        "limitation": "Observational post-change comparison, not causal proof or a non-inferiority certificate",
+        "observed": {
+          "connected": 271,
+          "dials": 1264,
+          "engaged": 138,
+          "hallucinations": 2
+        },
+        "pickup_harm_detected": false,
+        "signal_improved": true
+      },
+      "last_detail": "Incident signal improved on actual post-change exposure; continue normal detection"
+    },
+    {
+      "incident_id": "d66be41a-64f7-4e46-a27a-593e111f4d6f",
+      "kind": "caller_id",
+      "subject": "D2",
+      "detected_at": "2027-01-06T19:30:00+05:30",
+      "status": "stale",
+      "replacement": null,
+      "applied_at": null,
+      "approval": null,
+      "validation": null,
+      "evidence": {
+        "baseline": {
+          "connected": 8226,
+          "dials": 32537,
+          "engaged": 4152,
+          "hallucinations": 120
+        },
+        "confirmation_looks": 5,
+        "kind": "caller_id",
+        "recent": {
+          "connected": 39,
+          "dials": 477,
+          "engaged": 24,
+          "hallucinations": 0
+        },
+        "subject": "D2",
+        "window_end": "2027-01-06T19:00:00+05:30",
+        "window_start": "2027-01-06T15:00:00+05:30"
+      },
+      "verification": null,
+      "last_detail": "Config changed before submission; discard old candidate and re-detect"
+    },
+    {
+      "incident_id": "bcccbdc5-077e-44dc-bdbe-01bf664b280f",
+      "kind": "caller_id",
+      "subject": "D2",
+      "detected_at": "2027-01-07T13:00:00+05:30",
+      "status": "resolved",
+      "replacement": "D1",
+      "applied_at": "2027-01-07T14:00:00+05:30",
+      "approval": {
+        "apply_by": "2027-01-07T15:38:00+05:30",
+        "approval_id": "apr_00002",
+        "base_version": 3,
+        "changed_dims": [
+          "caller_id"
+        ],
+        "created_at": "2027-01-07T13:00:00+05:30",
+        "decided_at": "2027-01-07T13:38:00+05:30",
+        "expires_at": "2027-01-08T01:00:00+05:30",
+        "proposal_id": "bcccbdc5-077e-44dc-bdbe-01bf664b280f",
+        "reasons": [],
+        "status": "approved",
+        "workflow_id": "ks_cancel"
+      },
+      "validation": null,
+      "evidence": {
+        "baseline": {
+          "connected": 8226,
+          "dials": 32537,
+          "engaged": 4152,
+          "hallucinations": 120
+        },
+        "confirmation_looks": 2,
+        "kind": "caller_id",
+        "recent": {
+          "connected": 51,
+          "dials": 503,
+          "engaged": 27,
+          "hallucinations": 3
+        },
+        "subject": "D2",
+        "window_end": "2027-01-07T13:00:00+05:30",
+        "window_start": "2027-01-07T09:00:00+05:30"
+      },
+      "verification": {
+        "engagement_harm_detected": false,
+        "limitation": "Observational post-change comparison, not causal proof or a non-inferiority certificate",
+        "observed": {
+          "connected": 209,
+          "dials": 897,
+          "engaged": 103,
+          "hallucinations": 8
+        },
+        "pickup_harm_detected": false,
+        "signal_improved": true
+      },
+      "last_detail": "Incident signal improved on actual post-change exposure; continue normal detection"
+    },
+    {
+      "incident_id": "16a0a31d-1c5e-4a04-bed2-5bedc540e6f5",
+      "kind": "hallucination",
+      "subject": "P2",
+      "detected_at": "2027-01-07T16:45:00+05:30",
+      "status": "resolved",
+      "replacement": "P1",
+      "applied_at": "2027-01-07T18:45:00+05:30",
+      "approval": {
+        "apply_by": "2027-01-07T20:28:00+05:30",
+        "approval_id": "apr_00003",
+        "base_version": 4,
+        "changed_dims": [
+          "prompt_version"
+        ],
+        "created_at": "2027-01-07T16:45:00+05:30",
+        "decided_at": "2027-01-07T18:28:00+05:30",
+        "expires_at": "2027-01-08T04:45:00+05:30",
+        "proposal_id": "16a0a31d-1c5e-4a04-bed2-5bedc540e6f5",
+        "reasons": [],
+        "status": "approved",
+        "workflow_id": "ks_cancel"
+      },
+      "validation": {
+        "credits_remaining": 192.0,
+        "failures": 7,
+        "n": 500,
+        "pass_rate": 0.986,
+        "prompt_version": "P1",
+        "ts": "2027-01-07T16:45:00+05:30",
+        "validation_run_id": "val_00001",
+        "workflow_id": "ks_cancel"
+      },
+      "evidence": {
+        "baseline": {
+          "connected": 16439,
+          "dials": 65018,
+          "engaged": 8288,
+          "hallucinations": 225
+        },
+        "confirmation_looks": 2,
+        "kind": "hallucination",
+        "recent": {
+          "connected": 342,
+          "dials": 1600,
+          "engaged": 164,
+          "hallucinations": 21
+        },
+        "subject": "P2",
+        "window_end": "2027-01-07T16:00:00+05:30",
+        "window_start": "2027-01-07T12:00:00+05:30"
+      },
+      "verification": {
+        "engagement_harm_detected": false,
+        "limitation": "Observational post-change comparison, not causal proof or a non-inferiority certificate",
+        "observed": {
+          "connected": 924,
+          "dials": 4500,
+          "engaged": 461,
+          "hallucinations": 11
+        },
+        "pickup_harm_detected": false,
+        "signal_improved": true
+      },
+      "last_detail": "Incident signal improved on actual post-change exposure; continue normal detection"
+    },
+    {
+      "incident_id": "f21822b3-3c31-4c56-b450-ca83051d03b6",
+      "kind": "caller_id",
+      "subject": "D1",
+      "detected_at": "2027-01-10T20:00:00+05:30",
+      "status": "resolved",
+      "replacement": null,
+      "applied_at": null,
+      "approval": null,
+      "validation": null,
+      "evidence": {
+        "baseline": {
+          "connected": 8213,
+          "dials": 32481,
+          "engaged": 4136,
+          "hallucinations": 105
+        },
+        "confirmation_looks": 2,
+        "kind": "caller_id",
+        "recent": {
+          "connected": 245,
+          "dials": 1437,
+          "engaged": 117,
+          "hallucinations": 4
+        },
+        "subject": "D1",
+        "window_end": "2027-01-10T20:00:00+05:30",
+        "window_start": "2027-01-10T16:00:00+05:30"
+      },
+      "verification": null,
+      "last_detail": "Signal subsided before action; no configuration change or causal improvement claimed"
+    }
+  ],
+  "timeline": [
+    {
+      "sequence": 1,
+      "incident_id": "85c5dd93-f68a-4098-a6f2-3b1b061053cd",
+      "ts": "2027-01-06T12:00:00+05:30",
+      "status": "detected",
+      "detail": "Population threshold exceeded at two consecutive hourly looks"
+    },
+    {
+      "sequence": 2,
+      "incident_id": "85c5dd93-f68a-4098-a6f2-3b1b061053cd",
+      "ts": "2027-01-06T12:00:00+05:30",
+      "status": "detected",
+      "detail": "No adequately observed healthier caller ID yet; wait for a fresh hourly population, never assume unused IDs are safe"
+    },
+    {
+      "sequence": 3,
+      "incident_id": "85c5dd93-f68a-4098-a6f2-3b1b061053cd",
+      "ts": "2027-01-06T13:00:00+05:30",
+      "status": "ready",
+      "detail": "Bounded candidate prepared; awaiting human approval submission"
+    },
+    {
+      "sequence": 4,
+      "incident_id": "85c5dd93-f68a-4098-a6f2-3b1b061053cd",
+      "ts": "2027-01-06T13:00:00+05:30",
+      "status": "submitting",
+      "detail": "Saved complete approval request before HTTP mutation"
+    },
+    {
+      "sequence": 5,
+      "incident_id": "85c5dd93-f68a-4098-a6f2-3b1b061053cd",
+      "ts": "2027-01-06T13:00:00+05:30",
+      "status": "pending",
+      "detail": "Human approval requested; no config changes without approval"
+    },
+    {
+      "sequence": 6,
+      "incident_id": "85c5dd93-f68a-4098-a6f2-3b1b061053cd",
+      "ts": "2027-01-06T14:45:00+05:30",
+      "status": "applying",
+      "detail": "Persisted apply intent for approved proposal apr_00001"
+    },
+    {
+      "sequence": 7,
+      "incident_id": "85c5dd93-f68a-4098-a6f2-3b1b061053cd",
+      "ts": "2027-01-06T14:45:00+05:30",
+      "status": "verifying",
+      "detail": "Remote history confirms authorised application; collecting live post-change evidence"
+    },
+    {
+      "sequence": 8,
+      "incident_id": "85c5dd93-f68a-4098-a6f2-3b1b061053cd",
+      "ts": "2027-01-06T19:15:00+05:30",
+      "status": "resolved",
+      "detail": "Incident signal improved on actual post-change exposure; continue normal detection"
+    },
+    {
+      "sequence": 9,
+      "incident_id": "d66be41a-64f7-4e46-a27a-593e111f4d6f",
+      "ts": "2027-01-06T19:30:00+05:30",
+      "status": "detected",
+      "detail": "Population threshold exceeded at two consecutive hourly looks"
+    },
+    {
+      "sequence": 10,
+      "incident_id": "d66be41a-64f7-4e46-a27a-593e111f4d6f",
+      "ts": "2027-01-07T11:45:00+05:30",
+      "status": "stale",
+      "detail": "Config changed before submission; discard old candidate and re-detect"
+    },
+    {
+      "sequence": 11,
+      "incident_id": "bcccbdc5-077e-44dc-bdbe-01bf664b280f",
+      "ts": "2027-01-07T13:00:00+05:30",
+      "status": "detected",
+      "detail": "Population threshold exceeded at two consecutive hourly looks"
+    },
+    {
+      "sequence": 12,
+      "incident_id": "bcccbdc5-077e-44dc-bdbe-01bf664b280f",
+      "ts": "2027-01-07T13:00:00+05:30",
+      "status": "ready",
+      "detail": "Bounded candidate prepared; awaiting human approval submission"
+    },
+    {
+      "sequence": 13,
+      "incident_id": "bcccbdc5-077e-44dc-bdbe-01bf664b280f",
+      "ts": "2027-01-07T13:00:00+05:30",
+      "status": "submitting",
+      "detail": "Saved complete approval request before HTTP mutation"
+    },
+    {
+      "sequence": 14,
+      "incident_id": "bcccbdc5-077e-44dc-bdbe-01bf664b280f",
+      "ts": "2027-01-07T13:00:00+05:30",
+      "status": "pending",
+      "detail": "Human approval requested; no config changes without approval"
+    },
+    {
+      "sequence": 15,
+      "incident_id": "bcccbdc5-077e-44dc-bdbe-01bf664b280f",
+      "ts": "2027-01-07T14:00:00+05:30",
+      "status": "applying",
+      "detail": "Persisted apply intent for approved proposal apr_00002"
+    },
+    {
+      "sequence": 16,
+      "incident_id": "bcccbdc5-077e-44dc-bdbe-01bf664b280f",
+      "ts": "2027-01-07T14:00:00+05:30",
+      "status": "verifying",
+      "detail": "Remote history confirms authorised application; collecting live post-change evidence"
+    },
+    {
+      "sequence": 17,
+      "incident_id": "bcccbdc5-077e-44dc-bdbe-01bf664b280f",
+      "ts": "2027-01-07T16:30:00+05:30",
+      "status": "resolved",
+      "detail": "Incident signal improved on actual post-change exposure; continue normal detection"
+    },
+    {
+      "sequence": 18,
+      "incident_id": "16a0a31d-1c5e-4a04-bed2-5bedc540e6f5",
+      "ts": "2027-01-07T16:45:00+05:30",
+      "status": "detected",
+      "detail": "Population threshold exceeded at two consecutive hourly looks"
+    },
+    {
+      "sequence": 19,
+      "incident_id": "16a0a31d-1c5e-4a04-bed2-5bedc540e6f5",
+      "ts": "2027-01-07T16:45:00+05:30",
+      "status": "ready",
+      "detail": "Bounded candidate prepared; awaiting human approval submission"
+    },
+    {
+      "sequence": 20,
+      "incident_id": "16a0a31d-1c5e-4a04-bed2-5bedc540e6f5",
+      "ts": "2027-01-07T16:45:00+05:30",
+      "status": "submitting",
+      "detail": "Saved complete approval request before HTTP mutation"
+    },
+    {
+      "sequence": 21,
+      "incident_id": "16a0a31d-1c5e-4a04-bed2-5bedc540e6f5",
+      "ts": "2027-01-07T16:45:00+05:30",
+      "status": "pending",
+      "detail": "Human approval requested; no config changes without approval"
+    },
+    {
+      "sequence": 22,
+      "incident_id": "16a0a31d-1c5e-4a04-bed2-5bedc540e6f5",
+      "ts": "2027-01-07T18:45:00+05:30",
+      "status": "applying",
+      "detail": "Persisted apply intent for approved proposal apr_00003"
+    },
+    {
+      "sequence": 23,
+      "incident_id": "16a0a31d-1c5e-4a04-bed2-5bedc540e6f5",
+      "ts": "2027-01-07T18:45:00+05:30",
+      "status": "verifying",
+      "detail": "Remote history confirms authorised application; collecting live post-change evidence"
+    },
+    {
+      "sequence": 24,
+      "incident_id": "16a0a31d-1c5e-4a04-bed2-5bedc540e6f5",
+      "ts": "2027-01-08T18:00:00+05:30",
+      "status": "resolved",
+      "detail": "Incident signal improved on actual post-change exposure; continue normal detection"
+    },
+    {
+      "sequence": 25,
+      "incident_id": "f21822b3-3c31-4c56-b450-ca83051d03b6",
+      "ts": "2027-01-10T20:00:00+05:30",
+      "status": "detected",
+      "detail": "Population threshold exceeded at two consecutive hourly looks"
+    },
+    {
+      "sequence": 26,
+      "incident_id": "f21822b3-3c31-4c56-b450-ca83051d03b6",
+      "ts": "2027-01-11T11:00:00+05:30",
+      "status": "resolved",
+      "detail": "Signal subsided before action; no configuration change or causal improvement claimed"
+    }
+  ]
+}

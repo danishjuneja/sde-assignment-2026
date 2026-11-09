@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Contract: ./run.sh <SIM_URL> runs until the scenario finishes.
-# Current milestone is observe-only: durable ingestion, no configuration changes.
+# Durable ingestion and incident response; all incident changes need human approval.
 set -euo pipefail
 SIM_URL="${1:?usage: ./run.sh <SIM_URL>}"
 ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"

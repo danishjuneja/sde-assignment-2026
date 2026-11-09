@@ -28,7 +28,7 @@ def main():
     database.parent.mkdir(parents=True, exist_ok=True)
     root = Path(__file__).resolve().parents[1]
     command = [sys.executable, "-m", "controller", "run", "--url", args.url,
-               "--db", str(database), "--max-ticks", "0"]
+               "--db", str(database), "--max-ticks", "0", "--observe-only"]
     with httpx.Client(base_url=args.url, timeout=120) as api:
         response = api.get("/sim/state")
         response.raise_for_status()

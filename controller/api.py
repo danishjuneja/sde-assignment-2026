@@ -48,6 +48,12 @@ class SimulatorAPI:
             response.raise_for_status()
             yield from response.iter_lines()
 
+    def post(self, path: str, body: dict) -> dict:
+        """One attempt only. Callers persist intent and reconcile uncertain results."""
+        response = self.client.post(path, json=body)
+        response.raise_for_status()
+        return response.json()
+
     def advance(self, before: dict) -> dict:
         """Never blindly retry a potentially successful time advance."""
         try:

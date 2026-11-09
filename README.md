@@ -185,22 +185,32 @@ thing you cut.
 
 ### Current status
 
-**The foundation is implemented, not the complete assignment.** The controller currently observes only:
-it reads historical and live events, saves progress, tracks pickup and engagement separately, records
-observed configurations, and resumes after interrupted ingestion. It does not yet experiment, request
-approvals, change configurations, or improve outcomes.
+**Durable ingestion and incident response are implemented, not the complete assignment.** The controller
+reads historical and live events, saves progress, tracks pickup and engagement separately, and responds
+to caller-ID deterioration and hallucination-flag spikes. It prepares evidence-backed proposals,
+requests human approval, applies authorised changes, and verifies actual post-change observations.
+It does not yet run voice/message experiments or provide general winner-decay rollback.
 
 Verification so far:
-- 24 tests pass: six existing simulator tests and eighteen controller test cases.
+- 58 tests pass, including detection thresholds, credit protection, approval reconciliation, supervisor
+  edits, lost responses, and post-change engagement checks.
 - The full eight-day `public_01` scenario completed through `run.sh`, storing 297,024 historical and live
   records across 393 chunks.
 - An abrupt process kill after a 500-record commit was followed by a successful restart and complete
   backlog ingestion, with matching record/call counts and a passing SQLite integrity check.
 - This proves ingestion recovery, **not** approval/apply recovery, load capacity, or statistical correctness.
+- With incident response enabled, `public_01` completed with zero proposals, changes, or credit spend.
+- In `public_02`, three human-approved changes were graded beneficial. Kestrel's conclusion rate improved
+  16.4% relative to baseline; hallucinated calls fell from 330 to 81. The controller spent eight credits,
+  with no expired/lapsed approvals. These public-scenario results do not guarantee hidden-scenario lift.
 
 Usage: [controller guide](docs/CONTROLLER.md). Evidence: [foundation report](reports/foundation.md) and
-[ingestion recovery results](reports/ingest_recovery.json). Target design:
+[ingestion recovery results](reports/ingest_recovery.json). Current graded runs:
+[public_01](reports/public_01.md), [public_02](reports/public_02.md). Target design:
 [implementation plan](docs/IMPLEMENTATION_PLAN.md).
+
+Incident-response design, timeline, reproduction steps and limitations:
+[incident response report](reports/incident_response.md).
 
 ### Design and scope decisions
 
@@ -210,7 +220,9 @@ Usage: [controller guide](docs/CONTROLLER.md). Evidence: [foundation report](rep
 
 **Reason:** A learning system is unsafe if it forgets pending work or counts the same calls twice.
 
-**Status:** Implemented for ingestion. The controller remains observe-only.
+**Status:** Implemented for ingestion. Incident proposals and paid-call intents are also durable;
+proposal/apply uncertainty is tested with synthetic HTTP responses. Actual process-kill evidence
+currently covers ingestion only. Use `--observe-only` to disable incident actions.
 
 #### 2. Keep the implementation small
 
@@ -234,8 +246,9 @@ policy explicitly allows them. Stakeholder requests do not override the contract
 `public_01` showed that Northwind KYC disables auto-apply. Kestrel allows only certain automatic changes,
 excludes prompts and cohorts, and caps allocation shifts at 0.2.
 
-**Status:** Policies inspected and workflow metadata stored. Policy enforcement and approval handling
-are not yet implemented. These observations must not become hardcoded assumptions for other scenarios.
+**Status:** Incident fixes always use human approval, even where auto-apply is permitted. Runtime checks
+cover approval hours, request caps, latency/TTL, current base version and apply deadlines. These observed
+public policies are not hardcoded assumptions for other scenarios. Auto-apply is deliberately unused.
 
 #### 4. Keep the measurements separate
 
@@ -285,7 +298,10 @@ configuration over a supervisor's newer edits, and it cannot bypass approval rul
 **Reason:** Validation checks safety, not engagement. A safe script can still make customers hang up.
 After an authorised prompt change, both live safety signals and engagement need verification.
 
-**Status:** Planned incident-response design.
+**Status:** Implemented: ask for suggestions, consider previously observed recovery prompts, validate
+candidates within a bounded budget, request approval with matching evidence, then check live safety
+signals and engagement. No safe candidate, insufficient exposure or clear harm is escalated rather
+than presented as success. Verification is observational, not causal proof.
 
 #### 9. Keep evidence in our own database
 
@@ -294,8 +310,9 @@ and approval records as those capabilities are implemented.
 
 **Reason:** The assignment requires an explanation from our own records; simulator logs do not count.
 
-**Status:** Events and observed configurations are stored and queryable. Controller decision explanations,
-approval evidence, and post-change analysis are still pending.
+**Status:** Events, configurations, incident evidence, complete proposals, approval state, validation
+references and verification results are stored and queryable. An incident timeline explains why each
+state transition occurred. Full point-in-time reconstruction and named-human identity are not provided.
 
 #### 10. Deliberately defer some features
 
@@ -319,15 +336,13 @@ explainable, safety-first controller over a broad system that changes everything
 
 ### Remaining work
 
-Next implement safe approval and change handling, followed by the learning loop:
+Incident response adds a narrow governed change path. Remaining work includes:
 
-1. Durable proposals, runtime policy checks, approval reconciliation, and authorised application.
-2. Safe handling of supervisor edits, stale proposals, expiry, and lapse.
-3. Population-level problem detection and statistically defensible experiments.
-4. Winner promotion, ongoing monitoring, and governed rollback.
-5. Caller-ID health and validated prompt incident response, with credit budgeting.
-6. Decision-level audit explanations and post-change verification.
-7. Incident-scenario testing, load benchmarks, and approval/apply crash-recovery evidence.
-8. Graded reports, stakeholder replies, and the complete `SUBMISSION.md` required by the template.
+1. Controlled voice/message experiments and statistically defensible winner selection.
+2. Winner promotion, ongoing decay monitoring, and governed rollback.
+3. Stronger population-adjusted incident inference and empirical false-alarm evaluation.
+4. Load benchmarks and end-to-end approval/apply process-kill evidence.
+5. More precise affected-lead estimates, richer replay and operational metrics.
+6. Stakeholder replies and the complete `SUBMISSION.md` required by the template.
 
 This README section is a progress and decision summary; it does not replace the required `SUBMISSION.md`.

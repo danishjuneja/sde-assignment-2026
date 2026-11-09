@@ -1,9 +1,10 @@
-"""Observe-only loop; configuration mutations are intentionally not implemented yet."""
+"""Durable ingestion loop with optional governed incident response."""
 
 import logging
 
 from .api import SimulatorAPI
 from .ingest import ingest_available
+from .incidents import incident_tick
 from .store import Store
 
 
@@ -19,11 +20,13 @@ def refresh_configs(api: SimulatorAPI, store: Store):
         )
 
 
-def run(api: SimulatorAPI, store: Store, *, max_ticks: int | None = None):
+def run(api: SimulatorAPI, store: Store, *, max_ticks: int | None = None, observe_only: bool = False):
     if max_ticks is not None and max_ticks < 0:
         raise ValueError("max_ticks cannot be negative")
     state = api.get("/sim/state")
     store.observe_world(api.url, state)
+    with store.db:
+        store.set_meta("mode", "observe_only" if observe_only else "incident_response")
     for workflow in api.get("/workflows"):
         store.save_workflow(workflow)
     refresh_configs(api, store)
@@ -38,10 +41,14 @@ def run(api: SimulatorAPI, store: Store, *, max_ticks: int | None = None):
         ).fetchone()
         if changed:
             refresh_configs(api, store)
+        if not observe_only:
+            incident_tick(api, store, state)
         with store.db:
             store.set_meta("advance_pending", None)
             store.set_meta("ingested_through", state["ts"])
         if state["finished"] or (max_ticks is not None and ticks >= max_ticks):
+            # Paid work may have changed credits without advancing the clock.
+            store.observe_world(api.url, api.get("/sim/state"))
             LOG.info("%s at %s", "Finished" if state["finished"] else "Paused", state["ts"])
             return store.status()
         with store.db:

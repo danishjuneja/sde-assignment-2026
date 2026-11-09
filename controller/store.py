@@ -2,6 +2,7 @@
 
 import json
 import sqlite3
+from datetime import datetime
 from pathlib import Path
 
 
@@ -33,6 +34,7 @@ CREATE TABLE IF NOT EXISTS leads (
     features TEXT NOT NULL, concluded INTEGER NOT NULL DEFAULT 0
 );
 CREATE INDEX IF NOT EXISTS leads_person ON leads(workflow_id, person_id);
+CREATE INDEX IF NOT EXISTS leads_campaign ON leads(campaign_id, concluded);
 CREATE TABLE IF NOT EXISTS campaigns (
     campaign_id TEXT PRIMARY KEY, workflow_id TEXT NOT NULL,
     kind TEXT NOT NULL, leads INTEGER NOT NULL, config_version INTEGER NOT NULL
@@ -52,6 +54,23 @@ CREATE TABLE IF NOT EXISTS config_history (
     workflow_id TEXT NOT NULL, version INTEGER NOT NULL,
     payload TEXT NOT NULL, PRIMARY KEY(workflow_id, version)
 );
+CREATE TABLE IF NOT EXISTS incidents (
+    incident_id TEXT PRIMARY KEY, workflow_id TEXT NOT NULL,
+    status TEXT NOT NULL, payload TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS incidents_workflow ON incidents(workflow_id);
+CREATE TABLE IF NOT EXISTS incident_audit (
+    sequence INTEGER PRIMARY KEY AUTOINCREMENT, incident_id TEXT NOT NULL,
+    ts TEXT NOT NULL, status TEXT NOT NULL, detail TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS incident_signals (
+    signal_key TEXT PRIMARY KEY, payload TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS incident_calls (
+    call_id TEXT PRIMARY KEY, incident_id TEXT NOT NULL, operation TEXT NOT NULL,
+    credit_cost INTEGER NOT NULL, status TEXT NOT NULL, request TEXT NOT NULL,
+    response TEXT
+);
 """
 
 
@@ -70,10 +89,10 @@ class Store:
         self.db.execute("PRAGMA busy_timeout=5000")
         self.db.executescript(SCHEMA)
         version = self.meta("schema_version")
-        if version not in (None, 1):
+        if version not in (None, 1, 2):
             raise RuntimeError(f"Unsupported database schema: {version}")
         with self.db:
-            self.set_meta("schema_version", 1)
+            self.set_meta("schema_version", 2)
 
     def close(self):
         self.db.close()
@@ -207,6 +226,41 @@ class Store:
         with self.db:
             self.db.execute("UPDATE chunks SET complete=1 WHERE chunk=?", (number,))
 
+    def save_incident(self, incident: dict, ts: str, detail: str):
+        with self.db:
+            self.db.execute(
+                "INSERT INTO incidents VALUES (?,?,?,?) ON CONFLICT(incident_id) "
+                "DO UPDATE SET status=excluded.status,payload=excluded.payload",
+                (incident["incident_id"], incident["workflow_id"], incident["status"], encode(incident)),
+            )
+            self.db.execute(
+                "INSERT INTO incident_audit(incident_id,ts,status,detail) VALUES (?,?,?,?)",
+                (incident["incident_id"], ts, incident["status"], detail),
+            )
+
+    def incident_records(self, workflow_id: str | None = None) -> list[dict]:
+        # Older read-only foundation databases may not have been migrated yet.
+        if not self.db.execute("SELECT 1 FROM sqlite_master WHERE name='incidents'").fetchone():
+            return []
+        query, params = "SELECT payload FROM incidents", ()
+        if workflow_id:
+            query += " WHERE workflow_id=?"
+            params = (workflow_id,)
+        return [json.loads(r[0]) for r in self.db.execute(query + " ORDER BY rowid", params)]
+
+    def incident_timeline(self, workflow_id: str, at: str | None = None) -> list[dict]:
+        if not self.db.execute("SELECT 1 FROM sqlite_master WHERE name='incident_audit'").fetchone():
+            return []
+        query = (
+            "SELECT a.* FROM incident_audit a JOIN incidents i USING(incident_id) "
+            "WHERE i.workflow_id=?"
+        )
+        params = [workflow_id]
+        if at:
+            query += " AND julianday(a.ts)<=julianday(?)"
+            params.append(at)
+        return [dict(r) for r in self.db.execute(query + " ORDER BY sequence", params)]
+
     def status(self) -> dict:
         rows = self.db.execute(
             "SELECT workflow_id,kind,SUM(dials) dials,SUM(connected) connected,"
@@ -223,7 +277,7 @@ class Store:
             "SELECT type,COUNT(*) FROM events GROUP BY type"
         ).fetchall())
         return {
-            "mode": "observe_only",
+            "mode": self.meta("mode") or "observe_only",
             "remote_state": self.meta("remote_state"),
             "event_counts": counts,
             "chunks": dict(self.db.execute(
@@ -231,6 +285,7 @@ class Store:
                 "COALESCE(SUM(processed_lines),0) processed_lines FROM chunks"
             ).fetchone()),
             "kpis": kpis,
+            "incidents": self.incident_records(),
         }
 
     def explain(self, workflow_id: str, at: str | None = None) -> dict:
@@ -252,6 +307,10 @@ class Store:
             "observed_changes": [json.loads(r[0]) for r in changes],
             "config_snapshots": [json.loads(r[0]) for r in snapshots],
             "remote_history_observed": [json.loads(r[0]) for r in history],
-            "limitation": "Observe-only milestone: no controller change decisions yet. "
-                          "Snapshots/history are all observed versions, not an as-of reconstruction.",
+            "incidents": [i for i in self.incident_records(workflow_id)
+                          if not at or datetime.fromisoformat(i["detected_at"]) <= datetime.fromisoformat(at)],
+            "incident_timeline": self.incident_timeline(workflow_id, at),
+            "limitation": "Snapshots/history and incident lifecycle records are current observed "
+                          "records, not a full as-of reconstruction. Detection is observational; "
+                          "no causal lift is claimed.",
         }
