@@ -1,6 +1,6 @@
 # Outcome-First Agent Loop — Submission
 
-**Name:** [Your name] · **Date:** 2026-11-14 · **Hours actually spent (be honest):** [Your actual hours] · **Language / storage:** Python / SQLite
+**Name:** Danish Juneja · **Date:** 2026-11-14 · **Hours actually spent (be honest):** 5 · **Language / storage:** Python / SQLite
 
 ---
 
